@@ -13,6 +13,8 @@ This holds various code snippets of things that I keep forgetting how I've done 
 ### C++
 * **mergeLHEFile.cpp** : Merge LHE files
 
+* **boostProgressBar.cpp** : Progress bar for loop using BOOST lib
+
 -----------------------------------------------------------------------------------
 
 ### Python
@@ -23,6 +25,8 @@ This holds various code snippets of things that I keep forgetting how I've done 
 * **duplicates.py** : Get the duplicates (indices) objects within a list
 
 * **pyximportcpp.py** : "Overwrite" Cythons pyximport to load C++ instead of C code
+
+* **progressBar.py** : Progress bar using the progressbar module
 
 
 -----------------------------------------------------------------------------------
