@@ -1,8 +1,3 @@
-#
-# @ Author: Nikolaos Karastathis < nkarast .at. gmail .dot. com >
-#
-# R Programming : Assignment #1 - Part 2
-#
 
 
 complete <- function(directory, id = 1:332) {
