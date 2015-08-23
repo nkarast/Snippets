@@ -24,6 +24,7 @@
     *   getArrayToRoot(rec_array, foutname, treename):
     *   fillHistFromNumpy(np_arr, histList=[], histname="")
     *   getListOfKeys(file, str_directory="")
+    *   checkDir(directory)
     *   shell_command(cmd)
     *   addinquadrature(numbers, power=2)
     *   fixstring(s)
@@ -302,6 +303,8 @@ def setRatioHistoStyle(h_ratio): #TH1F
     Style of ratio plot
     """
     import ROOT as rt
+    h_ratio.SetTitle("")
+    h_ratio.SetLineWidth(3)
     h_ratio.SetTitleSize(0.15,"x");
     h_ratio.SetTitleSize(0.15,"y");
     h_ratio.SetTitleOffset(0.45,"y");
@@ -310,7 +313,10 @@ def setRatioHistoStyle(h_ratio): #TH1F
     h_ratio.SetNdivisions(505,"y"); 
     h_ratio.SetTickLength(0.04,"y");
     h_ratio.SetTickLength(0.15,"x");
+    h_ratio.SetMarkerStyle(20)
+    h_ratio.SetMarkerColor(rt.kBlack)
     h_ratio.SetLineColor(rt.kBlack)
+    h_ratio.SetMarkerSize(0.8)
 
 #---***---***---***---***---***---***---***---***---***---***---***---
 
@@ -499,6 +505,16 @@ def getListOfKeys(file, str_directory="", silent=True):
 
 #---***---***---***---***---***---***---***---***---***---***---***---
 
+def checkDir(directory):
+    """
+    Check if a directory exists. If not creates it
+    """
+    import os
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
+#---***---***---***---***---***---***---***---***---***---***---***---
+
 def shell_command(cmd):
     import os
     """
@@ -633,11 +649,12 @@ def makeLegendDict(h1,h2,str1,str2,drawOption1="lf",drawOption2="lf"):
 
     list_hist = [h1, h2]
     list_opts = [[str1,drawOption1],[str2,drawOption2]]
+
     return dict(zip(list_hist,list_opts))
 
 #---***---***---***---***---***---***---***---***---***---***---***---
 
-def getLegend(inDict=None, x1=0.65, y1=0.65, x2=0.85, y2=0.90, borderSize=0, font=42, fontSize=0.045, fillColor=10, nColumns=2):
+def getLegend(inDict=None, x1=0.65, y1=0.65, x2=0.85, y2=0.90, borderSize=0, font=42, fontSize=0.032, fillColor=0, nColumns=2):
     """
         Creates a legend at 0.65, 0.65, 0.90 0.90
         hist1 and hist2
@@ -649,6 +666,10 @@ def getLegend(inDict=None, x1=0.65, y1=0.65, x2=0.85, y2=0.90, borderSize=0, fon
 
 
     import ROOT as rt
+
+    from ROOT import SetOwnership
+    
+
     leg = rt.TLegend(x1,y1,x2,y2)
     leg.SetBorderSize(borderSize)
     leg.SetTextFont(font)
@@ -657,7 +678,11 @@ def getLegend(inDict=None, x1=0.65, y1=0.65, x2=0.85, y2=0.90, borderSize=0, fon
     leg.SetNColumns(nColumns)
     if inDict != None:
         for key in inDict.keys():
+
             leg.AddEntry(key, inDict[key][0], " "+inDict[key][1])
+
+    SetOwnership(leg,0) # 0 = release (Show on canvas), 
+                        # 1 = keep ownership in this scope (destroy after return)
 
     return leg
 
@@ -776,11 +801,15 @@ def plotTwoHistos(h1,h2,labelX,labelY,\
         doNorm, doOverflow, doLogX,doLogY --> Bools
         drawOption -> histogram drawing option
 
-    Returns: The canvas
+    Returns: The canvas and the ratio plot 
+            *** Important *** The ratio plot must be returned so that it is in the same scope
+                            -> if it is not returned then it is never plotted.. Root...
     """
     import ROOT as rt
+    from ROOT import SetOwnership
 
     setStyle()
+
 
     if(doOverflow):
         drawOverflow(h1)
@@ -794,8 +823,11 @@ def plotTwoHistos(h1,h2,labelX,labelY,\
     else: canvX,canvY=800,600
 
     ## setting up canvas
-    canvas = rt.TCanvas("","",canvX,canvY)
-
+    canvas = rt.TCanvas("canv","canv",int(canvX),int(canvY))
+    
+    h_ratio = h1.Clone("h_ratio")
+    h_ratio.SetDirectory(0)
+    h_ratio.Divide(h2)
 
     if(doRatio):
         ## setting style with ratio
@@ -803,18 +835,19 @@ def plotTwoHistos(h1,h2,labelX,labelY,\
         setHistoHSG3Style(h2)
 
         ## setting up ratio histo
-        h_ratio = h1.Clone()
-        h_ratio.Divide(h2)
-        setHistoRatioStyle(h_ratio)
+        setRatioHistoStyle(h_ratio)
 
         ## setting up ratio pad
         pad2 = rt.TPad("pad2","",0,0,1,0.3)
         setsubPadStyle(pad2)
         pad2.SetGrid()
+        canvas.cd()
         pad2.Draw()
         pad2.cd()
-        h_ratio.GetYaxis().SetMaximum(1.5)
-        h_ratio.GetYaxis().SetMinimum(0.5)
+        h_ratio.GetYaxis().SetRangeUser(0.5, 1.5)
+        h_ratio.Draw("E")
+
+
         if(doLogX): pad2.SetLogx()
     
         if (ratio_legend1!=None) and (ratio_legend2!=None):
@@ -831,29 +864,31 @@ def plotTwoHistos(h1,h2,labelX,labelY,\
         ## setting up histo pad
         pad1 = rt.TPad("pad1","",0,0.3,1,1)
         setPadStyle(pad1)
-        pad1.Draw()
+        pad1.Draw("same")
         pad1.cd()
         h1.Draw(drawOption)
         h1.SetLabelSize(0.,"x")
-        h1.GetYaxis.SetTitle(labelY)
+        h1.GetYaxis().SetTitle(labelY)
         h2.Draw(drawOption+" same")
         if(doLogY): pad1.SetLogy()
         if(doLogX): pad1.SetLogx()
-
+        
+   
 
     else:
         ## setting style without ratio
+        canvas.cd()
         setHistoStyle(h1)
         setHistoStyle(h2)
         h1.Draw(drawOption)
         h2.Draw(drawOption+" same")
-        if(doLogY): pad1.SetLogy()
-        if(doLogX): pad1.SetLogx()
+        if(doLogY): canvas.SetLogy()
+        if(doLogX): canvas.SetLogx()
 
     if (doLegend):
-        makeLegendDict(h1,h2,legend1,legend2,legend1Option,legend2Option)
         leg = getLegend(makeLegendDict(h1,h2,legend1,legend2,legend1Option,legend2Option), \
-                    x1=0.65, y1=0.65, x2=0.85, y2=0.90, nColumns=1)
+                    x1=0.60, y1=0.70, x2=0.88, y2=0.90, nColumns=1)
+        canvas.cd()
         leg.Draw("same")
 
     if (doLatex):
@@ -865,7 +900,7 @@ def plotTwoHistos(h1,h2,labelX,labelY,\
             tex.SetTextSize(tex["textsize"])
             tex.DrawLatex(tex["textxpos"],tex["textypos"], tex["textstring"])
 
-    canvas.cd()
-    return canvas
+    
+    return canvas, h_ratio
 
 #---***---***---***---***---***---***---***---***---***---***---***---
