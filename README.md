@@ -28,6 +28,8 @@ This holds various code snippets of things that I keep forgetting how I've done 
 
 * **progressBar.py** : Progress bar using the progressbar module
 
+* **mymodule.py** : This is my library with various functions
+
 
 -----------------------------------------------------------------------------------
 
@@ -64,3 +66,5 @@ This holds various code snippets of things that I keep forgetting how I've done 
 * **removeBranchesFromNtuple.C** : Remove branches from an ntuple.
 
 * **rootnotes.py** : Helper module for displaying ROOT canvases in iPython notebook
+
+* **overlayOutputHistograms.py** Get distributions from two files and make (ratio) plots.
