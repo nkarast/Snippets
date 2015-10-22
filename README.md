@@ -34,9 +34,31 @@ This holds various code snippets of things that I keep forgetting how I've done 
 -----------------------------------------------------------------------------------
 
 ### R 
+* **boxPlot.R** : Create a Box-Plot
+
 * **complete.R** : Given a directory of csv files returns a dataframe with the numeric id of the file and the number of complete cases in it
 
+* **conditionalHistograms.R** : Generate histograms of the columns of the dataset conditional upon another variable
+
 * **corr.R** : Given a directory, it calls complete.R and in its df calculate the correlations of variables
+
+* **evaluateClassificationMode.R** : Evaluate the metrics for a classification model
+
+* **featureEngineering.R** : Feature engineering
+
+* **pairPlots.R** : Make pairs plot.
+
+* **plotResiduals.R** : Plot residuals label from prediction.
+
+* **prepareDataset.R** : Prepare dataset with column selection
+
+* **removeOutliers.R** : Remove outliers by applying selection requirements to dataset columns
+
+* **selectSubsetOfColumns.R** : Select a subset of columns
+
+* **visualizeClusters.R** : Visualize the result of a clustering algorithm (k-means)
+
+* **visualizeDataset.R** : Visualize the columns of a dataset.
 
 -----------------------------------------------------------------------------------
 
