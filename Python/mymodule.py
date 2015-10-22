@@ -32,7 +32,7 @@
     *   drawATLASLatex(type="Internal", x=0.22, y=0.86, size=0.06, font=42, color=1)
     *   drawLumiLatex(sqrtS="8", lumi = "20.3", x=0.2, y=0.79, size=0.04, font=42, color=1):
     *   getKS(hist1, hist2)
-    *   makeLegendDict(h1,h2,str1,str2,drawOption1="lf",drawOption2="lf"):
+    *   makeLegendDict(hist_list,str_list,drawOption_list)
     *   getLegend(inDict=None, x1=0.65, y1=0.65, x2=0.90, y2=0.90, borderSize=0, font=42, fontSize=0.045, fillColor=0, nColumns=2)
     *   filterKey(self, mykey , currentpath, tolist)
     *   getListOfPaths(str_infilename)
@@ -268,7 +268,7 @@ def setHistoStyle(histo): #th1
 
     info('(setHistoStyle) setting histo style for hist %s', histo.GetName())
     histo.SetTitle("")
-    histo.SetLineWidth(3)
+    histo.SetLineWidth(2)
     histo.SetTitleSize(0.05,"x")
     histo.SetTitleSize(0.05,"y")
     histo.SetNdivisions(510,"x")
@@ -638,19 +638,22 @@ def getKS(hist1, hist2):
 
 #---***---***---***---***---***---***---***---***---***---***---***---
 
-def makeLegendDict(h1,h2,str1,str2,drawOption1="lf",drawOption2="lf"):
+def makeLegendDict(hist_list,str_list,drawOption_list):
+    from collections import OrderedDict
     """
     Generates the dictionary for the getLegend()
-    Inputs : h1,h2 -> the two histograms
-             str1,str2 -> the strings to "legend" the histos with
-             drawOption1,2 -> the draw options for each histo
+    Inputs : hist_list -> list of histograms
+             str_list  -> List of legend labels
+             drawOption_list -> draw options list
     Returns : a dictionary
     """
 
-    list_hist = [h1, h2]
-    list_opts = [[str1,drawOption1],[str2,drawOption2]]
+    list_opts = []
+    for i in range(len(str_list)):
+        x = [str_list[i], drawOption_list[i]]
+        list_opts.append(x)
 
-    return dict(zip(list_hist,list_opts))
+    return OrderedDict(zip(hist_list,list_opts))
 
 #---***---***---***---***---***---***---***---***---***---***---***---
 
@@ -886,7 +889,7 @@ def plotTwoHistos(h1,h2,labelX,labelY,\
         if(doLogX): canvas.SetLogx()
 
     if (doLegend):
-        leg = getLegend(makeLegendDict(h1,h2,legend1,legend2,legend1Option,legend2Option), \
+        leg = getLegend(makeLegendDict([h1,h2],[legend1,legend2],[legend1Option,legend2Option]) ,
                     x1=0.60, y1=0.70, x2=0.88, y2=0.90, nColumns=1)
         canvas.cd()
         leg.Draw("same")
