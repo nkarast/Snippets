@@ -588,7 +588,7 @@ class BeamCal:
 				debug("(%s\t%s\t%s)"% (ms, mx, mlumi))
 
 		if outputFileName is not None:
-			np.savetxt(outputFileName, lumi, '%i\t%i\t%.6f')
+			np.savetxt(outputFileName, lumi, '%.3f\t%i\t%.6f')
 		return np.array(lumi)
 
 
@@ -739,7 +739,7 @@ class BeamCal:
 				debug("(%s\t%s\t%s)"% (ms, mx, mpz))
 
 		if outputFileName is not None:
-			np.savetxt(outputFileName, pz, '%i\t%i\t%.6f')
+			np.savetxt(outputFileName, pz, '%.3f\t%i\t%.6f')
 		return np.array(pz)
 
 
@@ -889,7 +889,7 @@ class BeamCal:
 				debug("(%s\t%s\t%s)"% (ms, mx, mpz))
 
 		if (outputFileName is not None):
-			np.savetxt(outputFileName, pz, '%i\t%i\t%.6f')
+			np.savetxt(outputFileName, pz, '%.3f\t%i\t%.6f')
 		return np.array(pz)
 
 
