@@ -30,6 +30,8 @@ This holds various code snippets of things that I keep forgetting how I've done 
 
 * **mymodule.py** : This is my library with various functions
 
+* **beamCal.py** : Calculate machine/beam conditions depending on beam parameters
+
 
 -----------------------------------------------------------------------------------
 
