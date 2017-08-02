@@ -13,7 +13,7 @@ Version: 0.2
 This is a collection of functions that numerically calculate the performance standards (luminosity, pileup, levelling time, beam lifetime, etc)
 of an accelerator machine (here defaults to HL-LHC), based on beam and machine parameters.
 
-Prerequisites: Scipy Stack i.e. NumPy, SciPy [optionally SymPy, Matplotlib] 
+Prerequisites: Scipy Stack i.e. NumPy, SciPy [optionally SymPy, Matplotlib]
 
 Available functions:
 --------------------
@@ -120,13 +120,13 @@ class BeamCal:
 
 	####################################################################################################
 	#
-	#	CURRENT SETUP PARAMETERS : NOMINAL SCENARIO AT 5e34	
+	#	CURRENT SETUP PARAMETERS : NOMINAL SCENARIO AT 5e34
 	#							   SNAPSHOT AT THE BEGGINING AND END OF THE COAST
 	#
 	####################################################################################################
-		self.Nb0 			= 2736.								# number of collision at IP1 and IP5
-		self.Npart0 		= 2.2e11 							# bunch charge at begining of coast
-		self.Nrj0 			= 7000. 							# collision energy [GeV]
+		self.Nb0 			= 2736. #2556 - LHC  				# number of collision at IP1 and IP5
+		self.Npart0 		= 1.25e11 							# bunch charge at begining of coast
+		self.Nrj0 			= 7000. #6500. - LHC				# collision energy [GeV]
 		self.gamma0 		= self.Nrj0/self.Mproton			# relativisitc factor
 		self.emitX0  		= 2.5e-06/self.gamma0 				# r.m.s. horizontal physical emittance in collision
 		self.emitY0  		= 2.5e-06/self.gamma0 				# r.m.s. vertical physical emittance in collision
@@ -136,14 +136,14 @@ class BeamCal:
 		self.hrf400 		= 35640. 							# LHC harmonic number for 400 Mhz
 		self.omegaCC0 		= self.hrf400*self.frev0/self.Clight*2.*np.pi 		# default omega/c for 400 MHz crab-cavities
 		self.VRF0 			= 11.4 								# reference CC voltage for full crabbing at 590 murad crossing angle
-		self.VRFx0 			= 6.8 								# CC voltage [MV] in crossing plane for 2 CCs
-		self.VRFy0 			= 0.0 								# default CC voltage [MV] in parallel plane 
+		self.VRFx0 			= 6.8 # 0. # LHC no CC				# CC voltage [MV] in crossing plane for 2 CCs
+		self.VRFy0 			= 0.0 								# default CC voltage [MV] in parallel plane
 		self.Llevel0 		= 5. 								# Default Level luminosity [10**34]
 		self.alpha0 		= 590.e-06 							# Default full crossing angle
-		self.bx0 			= 0.15  							# default H beta* 
+		self.bx0 			= 0.15  							# default H beta*
 		self.by0 			= 0.15   							# default V beta*
 		self.sepx0 			= 0 								# Default H separation in units of sigma
-		self.sepy0 			= 0 
+		self.sepy0 			= 0
 
 
 	####################################################################################################
@@ -184,7 +184,7 @@ class BeamCal:
 		return self.Nb0
 
 	def setNpart0(self, nNpart0):
-		info("[Npart0] %s --> %s" % (self.Npart0,nNpart0))
+		info("[Npart0] %.15f --> %.15f" % (self.Npart0,nNpart0))
 		self.Npart0 = nNpart0
 
 	def getNpart0(self):
@@ -295,7 +295,7 @@ class BeamCal:
 	#
 	####################################################################################################
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def rho(self, z,sigz):
 		'''
 		Typical longutudinal bunch distributions as a function of z [m], normalized to 1 and centered at 0.0 with a given r.m.s. of sigz [m]
@@ -308,8 +308,8 @@ class BeamCal:
 			return 1./(np.sqrt(3)*np.pi*sigz/np.sqrt(np.pi*np.pi -6))*(np.cos(np.pi*z/(2*np.sqrt(3)*np.pi*sigz/np.sqrt(np.pi*np.pi -6))))**2*Heaviside(1-np.fabs(z)/(np.sqrt(3)*np.pi*sigz/np.sqrt(np.pi*np.pi -6)))
 		elif self.beamProfile == "flat":
 			return 2**(5./4.)*np.sqrt(np.pi)/gamma(1./4.)**2/sigz*np.exp(-1./2.*(z/(gamma(1./4.)*sigz/np.sqrt(2.*np.pi)))**4)
-	
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def plotProfiles(self, z=np.linspace(-0.20,0.20,80,endpoint=True) , sigz=None ,currBeamProfile=None):
 		'''
 		Make a sample plot of the longitudinal bunch distributions available in the code
@@ -339,7 +339,7 @@ class BeamCal:
 		plt.show()
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def kernel(self, z, t, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, emitnx, emitny):
 		'''
 		Kernel function
@@ -347,15 +347,15 @@ class BeamCal:
 		return 1/np.sqrt(1 + (z/bx)**2)/np.sqrt(1 + (z/by)**2)*np.exp(-((dx*np.sqrt(bx*emitnx) + alpha*z - self.alpha0/omegaCCx/self.VRF0*(VRFx*np.cos(omegaCCx*t)*np.sin(omegaCCx*z)))/(2*np.sqrt(bx*emitnx))/np.sqrt(1 + (z/bx)**2))**2)*np.exp(-((dy*np.sqrt(by*emitny) + VRFy/self.VRF0*self.alpha0/omegaCCy*np.sin(omegaCCy*t)*np.cos(omegaCCy*z))/(2*np.sqrt(by*emitny))/np.sqrt(1 + (z/by)**2))**2)
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def density(self, z, t, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny):
 		'''
 		Non-normalized 2D pileup density -- Depends on rho function return value and beam profile
 		'''
-		return 2*self.kernel(z, t, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, emitnx, emitny)*self.rho(z - t, sigz)*self.rho(z + t, sigz) 
+		return 2*self.kernel(z, t, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, emitnx, emitny)*self.rho(z - t, sigz)*self.rho(z + t, sigz)
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def Rloss(self, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny):
 		'''
 		Generalized Loss factor - the double integral of density for z, t in the range of (-inf,inf)
@@ -363,7 +363,7 @@ class BeamCal:
 		return dblquad(lambda mt, mz: self.density(mz, mt, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny), -np.inf, np.inf, lambda x: -np.inf, lambda x: np.inf)[0]
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def mu2D(self, z, t, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny, mutot, lossfactor):
 		'''
 		Normalized 2D pileup density evt/mm/ps vs z[m] and t[ns]
@@ -374,18 +374,18 @@ class BeamCal:
 		return mutot*self.density(z, self.Clight*t*1.e-09, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny)/lossfactor*self.Clight*1.e-15
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def muz(self, z, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny, mutot, lossfactor):
 		'''
 		Normalized line pileup density [evt/mm] vs z [m]
 		'''
 		def intergrand(t, z, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny):
 			return self.density(z, t, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny)
-		
+
 		return 1.0e-03*mutot/lossfactor*quad(intergrand, -np.inf, np.inf, args=(z, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny))[0] # remember all quads return (value, abs_error)
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def mut(self, t, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny, mutot, lossfactor):
 		'''
 		Normalized time pileup density [evt/ps] vs. time [ns]
@@ -395,7 +395,7 @@ class BeamCal:
 		return self.Clight*1.e-12*mutot/lossfactor*quad(intergrand, -np.inf, np.inf, args=(t, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny, mutot, lossfactor))[0]
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def siglumz(self, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny):
 		'''
 		R.M.S. luminous region [cm]
@@ -403,7 +403,7 @@ class BeamCal:
 		return 100.*np.sqrt(dblquad(lambda mt, mz: self.density(mz, mt, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny)*mz*mz, -np.inf, np.inf, lambda x: -np.inf, lambda x: np.inf)[0]/self.Rloss(bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny))
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def siglumt(self, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny):
 		'''
 		R.M.S. Collision time [ps]
@@ -411,7 +411,7 @@ class BeamCal:
 		return 1.e12/self.Clight*np.sqrt(dblquad(lambda mt, mz: self.density(mz, mt, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny)*mt*mt, -np.inf, np.inf, lambda x: -np.inf, lambda x: np.inf)[0]/self.Rloss(bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny))
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def Tlife(self, Nb, Npart, Llevel):
 		'''
 		Beam lifetime [h]
@@ -419,7 +419,7 @@ class BeamCal:
 		return Nb*Npart/2./(self.sigtotproton*1.e-24)/(Llevel*1.e34)/3600.
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def TLev(self, Llevel, frev, Nb, Npart, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny):
 		'''
 		Levelling time [h]
@@ -427,7 +427,7 @@ class BeamCal:
 		return  (1. - np.sqrt(Llevel/self.Lumi(frev, Nb, Npart, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny)))*self.Tlife(Nb, Npart, Llevel)
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def Lumi(self, frev, Nb, Npart, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny):
 		'''
 		Luminosity [10^34 Hz/cm^2]
@@ -435,7 +435,7 @@ class BeamCal:
 		return (self.Rloss(bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny)*1./4./np.pi/np.sqrt(bx*by)/np.sqrt(emitnx*emitny)*frev*Nb*Npart**2)/1e38
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def myLumi(self, bstar, halfX, sep):
 		'''
 		Helper function to calculate lumi for the parameters : beta*, halfX and vertical separation
@@ -443,7 +443,7 @@ class BeamCal:
 		return self.Lumi(self.frev0, self.Nb0, self.Npart0, bstar, bstar, 2.e-06*halfX, 0., sep, np.min(np.array([self.VRFx0, halfX/295.*self.VRF0])), 0., self.omegaCC0, self.omegaCC0, self.sigz0, self.emitX0, self.emitY0)
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def mutot(self, frev, Nb, Npart, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny):
 		'''
 		Total pileup for given configuration
@@ -451,7 +451,7 @@ class BeamCal:
 		return (self.Lumi(frev, Nb, Npart, bx, by, alpha, dx, dy, VRFx, VRFy, omegaCCx, omegaCCy, sigz, emitnx, emitny)*1.0e34*self.sigprotoninelas*1.0e-24)/(self.Nb0*self.frev0)
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def myMutot(self, bstar, halfX, sep):
 		'''
 		User friendly function : Total pileup for current settings of b*, crossing and vertical separation
@@ -459,7 +459,7 @@ class BeamCal:
 		return (self.myLumi(bstar, halfX, sep)*1.0e34*self.sigprotoninelas*1.0e-24)/(self.Nb0*self.frev0)
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def myMuz(self, bstar, halfX, sep):
 		'''
 		User friendly function: Line density for z=0m and changing the mutot with the current luminosity
@@ -467,7 +467,7 @@ class BeamCal:
 		return self.muz(0.0, bstar, bstar, 2.0e-6*halfX, 0.0, sep,  np.min(np.array([self.VRFx0, halfX/295.*self.VRF0])), 0.0, self.omegaCC0, self.omegaCC0, self.sigz0, self.emitX0, self.emitY0, self.myMutot(bstar, halfX, sep), self.Rloss(bstar, bstar, 2.0e-6*halfX, 0.0, sep, np.min(np.array([self.VRFx0, halfX/295.*self.VRF0])), 0.0, self.omegaCC0, self.omegaCC0, self.sigz0, self.emitX0, self.emitY0))
 
 
-	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - 
+	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
 	def myLumz(self, bstar, halfX, sep):
 		'''
 		User friendly function: Luminous region for current settings of b*, crossing and vertical separation
@@ -489,7 +489,7 @@ class BeamCal:
 
 		Output: Returns an numpy array filled with three item tuples in the form of (beta* [cm], crossing [um], luminosity [10^34])
 		'''
-		
+
 		# Checks if input matches the object parameters, if not change it
 		if Npart != self.Npart0:
 			self.setNpart0(Npart)
@@ -530,24 +530,24 @@ class BeamCal:
 				savefile: Boolean that determines if the lumi results will be stored in a tabulated text file
 				outputFilePattern: Part of the filename to be stored. The routine will fill the intensity value and the suffix.
 		'''
-		if len(Npart) > 1:
-			debug("Running for multiple intensities... [%s]" % Npart)
-			if len(emitnx) != len(emitny):
-				critical("# runLumi_XBI: Different size input for emittances!")
-				raise ValueError("Different size input for emittances")
-			elif len(emitnx) > 1:
-				if len(emitnx) != len(Npart):
-					critical("# runLumi_XBI: Mismatch in the length of intensities and emittances")
-					raise ValueError("Mismatch in the length of intensities and emittances")
-				else:
-					warn("# runLumi_XBI: Hopefully you have ordered your intensities and emittances properly, my dear user...")
-					for Np, ex, ey in zip(Npart, emitnx, emitny):
-						info("Running Lumi XBI for I=%s, enx=%s, eny=%s and b=[%s:%s], x=[%s:%s]" % (Npart, emitnx, emitny, np.min(b), np.max(b), np.min(x), np.max(x)))
-						if savefile:
-							mfilename = outputFilePattern+str(Np/(1.0e11))+".txt"
-							self.runLumi_XB(b,x, Np, ex, ey, s=s, outputFileName=mfilename)
-						else:
-							self.runLumi_XB(b,x, Np, ex, ey, s=s, outputFileName=None)
+		# if len(Npart) > 1:
+		# 	debug("Running for multiple intensities... [%s]" % Npart)
+		if len(emitnx) != len(emitny):
+			critical("# runLumi_XBI: Different size input for emittances!")
+			raise ValueError("Different size input for emittances")
+		elif len(emitnx) > 1:
+			if len(emitnx) != len(Npart):
+				critical("# runLumi_XBI: Mismatch in the length of intensities and emittances")
+				raise ValueError("Mismatch in the length of intensities and emittances")
+			else:
+				warn("# runLumi_XBI: Hopefully you have ordered your intensities and emittances properly, my dear user...")
+				for Np, ex, ey in zip(Npart, emitnx, emitny):
+					info("Running Lumi XBI for I=%s, enx=%s, eny=%s and b=[%s:%s], x=[%s:%s]" % (Npart, emitnx, emitny, np.min(b), np.max(b), np.min(x), np.max(x)))
+					if savefile:
+						mfilename = outputFilePattern+str(Np/(1.0e11))+".txt"
+						self.runLumi_XB(b,x, Np, ex, ey, s=s, outputFileName=mfilename)
+					else:
+						self.runLumi_XB(b,x, Np, ex, ey, s=s, outputFileName=None)
 
 
 	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
@@ -640,7 +640,7 @@ class BeamCal:
 
 		Output: Returns an numpy array filled with three item tuples in the form of (beta* [cm], crossing [um], line pileup [evt/mm])
 		'''
-		
+
 		# Checks if input matches the object parameters, if not change it
 		if Npart != self.Npart0:
 			self.setNpart0(Npart)
@@ -715,7 +715,7 @@ class BeamCal:
 
 		Output: Returns an numpy array filled with three item tuples in the form of (beta* [cm], crossing [um], line pileup [evt/mm])
 		'''
-		
+
 		# Checks if input matches the object parameters, if not change it
 		if Npart != self.Npart0:
 			self.setNpart0(Npart)
@@ -790,7 +790,7 @@ class BeamCal:
 
 		Output: Returns an numpy array filled with three item tuples in the form of (beta* [cm], crossing [um], luminous region [cm])
 		'''
-		
+
 		# Checks if input matches the object parameters, if not change it
 		if Npart != self.Npart0:
 			self.setNpart0(Npart)
@@ -865,7 +865,7 @@ class BeamCal:
 
 		Output: Returns an numpy array filled with three item tuples in the form of (beta* [cm], crossing [um], line pileup [evt/mm])
 		'''
-		
+
 		# Checks if input matches the object parameters, if not change it
 		if Npart != self.Npart0:
 			self.setNpart0(Npart)
@@ -938,7 +938,7 @@ class BeamCal:
 
 
 	# - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - - * - -
-	def runXSI(self, s, x, Npart, emitnx, emitny, b=0.20, savefile=False):	
+	def runXSI(self, s, x, Npart, emitnx, emitny, b=0.20, savefile=False):
 		'''
 		Drive routine to produce all the txt files for the XSI scan
 		'''
@@ -976,7 +976,7 @@ Mproton 			= %s  	# proton mass [GeV]
 
 ####################################################################################################
 #
-#	CURRENT SETUP PARAMETERS : NOMINAL SCENARIO AT 5e34	
+#	CURRENT SETUP PARAMETERS : NOMINAL SCENARIO AT 5e34
 #				  SNAPSHOT AT THE BEGGINING AND END OF THE COAST
 #
 ####################################################################################################
@@ -993,7 +993,7 @@ hrf400 				= %s 	# LHC harmonic number for 400 Mhz
 omegaCC0 			= %s 	# default omega/c for 400 MHz crab-cavities
 VRF0 				= %s 		# reference CC voltage for full crabbing at 590 murad crossing angle
 VRFx0 				= %s 		# CC voltage [MV] in crossing plane for 2 CCs
-VRFy0 				= %s 		# default CC voltage [MV] in parallel plane 
+VRFy0 				= %s 		# default CC voltage [MV] in parallel plane
 Llevel0 			= %s 		# Default Level luminosity [10**34]
 alpha0 				= %s 	# Default full crossing angle
 
@@ -1022,7 +1022,7 @@ Version: 0.2
 This is a collection of functions that numerically calculate the performance standards (luminosity, pileup, levelling time, beam lifetime, etc)
 of an accelerator machine (here defaults to HL-LHC), based on beam and machine parameters.
 
-Prerequisites: Scipy Stack i.e. NumPy, SciPy [optionally SymPy, Matplotlib] 
+Prerequisites: Scipy Stack i.e. NumPy, SciPy [optionally SymPy, Matplotlib]
 
 Available functions:
 --------------------
@@ -1099,13 +1099,18 @@ Class: BeamCal
 #####################################################################################################################################################
 
 if __name__ == '__main__':
-	
-	### Example : 
-	x = BeamCal()
-	myS = createRange(0.0, 2.4, 0.2)
-	myX = createRange(120., 330., 15.)
-	mI = np.array([2.2e11, 1.9e11, 1.6e11, 1.3e11, 1.275e11, 1.25e11])
-	memitnx = np.array([2.50e-06, 2.50e-06, 2.50e-06, 2.50e-06, 2.50e-06, 2.50e-06])
-	memitny = np.array([2.50e-06, 2.50e-06, 2.50e-06, 2.50e-06, 2.50e-06,2.50e-06])
 
-	x.runXSI(myS, myX, mI, memitnx, memitny, b=0.20, savefile=True)
+	### Example :
+    x = BeamCal()
+    
+    myB = np.array([0.15])
+    myB_2 = createRange(0.20, 1., 0.10)
+    myB = np.append(myB, myB_2).ravel()
+    print 'B: ', myB
+    myX = createRange(120., 345., 15.)
+    print 'X: ', myX
+
+    mNpart	= np.array([1.3e11])
+    memitnx = np.array([2.5e-6])
+    memitny = np.array([2.5e-6])
+    x.runLumi_XB(myB,myX, 1.6e11, 2.5e-06, 2.5e-06, s=0.0, outputFileName='lumi_XBI_I1.6.txt')
